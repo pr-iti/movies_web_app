@@ -1,16 +1,26 @@
 from rest_framework import serializers
 from django.db import models
 
-from watchlist_app.models import WatchList,StreamPlatform
+from watchlist_app.models import WatchList,StreamPlatform, Review
 
-
+class ReviewListSerializer(serializers.ModelSerializer):
+   
+    class Meta:
+        model= Review
+        fields = '__all__' #['id','name','description','active']
+        # exclude =['active']
+     
+     
 class WatchListSerializer(serializers.ModelSerializer):
+    
+    reviews = ReviewListSerializer(many = True)
     #adds a len_name field to the models and objects
     len_name = serializers.SerializerMethodField()
     # StreamPlatform = models.ForeignKey(StreamPlatform, on_delete=models.CASCADE)
     class Meta:
         model= WatchList
-        fields = '__all__' #['id','name','description','active']
+        fields = '__all__'
+        
         # exclude =['active']
         
     def get_len_name(self, object):
