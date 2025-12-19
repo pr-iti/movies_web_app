@@ -1,16 +1,43 @@
 from rest_framework import serializers
-
-
+from django.db import models
 
 from watchlist_app.models import WatchList,StreamPlatform
 
 
-class StreamSerializer(serializers.ModelSerializer):
+class WatchListSerializer(serializers.ModelSerializer):
     #adds a len_name field to the models and objects
+    len_name = serializers.SerializerMethodField()
+    # StreamPlatform = models.ForeignKey(StreamPlatform, on_delete=models.CASCADE)
+    class Meta:
+        model= WatchList
+        fields = '__all__' #['id','name','description','active']
+        # exclude =['active']
+        
+    def get_len_name(self, object):
+        return len(object.title)
+    
+
+class StreamSerializer(serializers.HyperlinkedModelSerializer):
+    #adds a len_name field to the models and objects
+    
+    #adds the relation b/t streaming & movie list
+    # watchlist = WatchListSerializer(many = True,read_only=True)
+    
+    # custom field in the serializer to display for relations
+    # watchlist = serializers.StringRelatedField(many = True,read_only=True)
+    
+    watchlist = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='WatchList-Detail'
+    )
     len_name = serializers.SerializerMethodField()
     class Meta:
         model= StreamPlatform
-        fields = '__all__' 
+        fields = '__all__'
+        extra_kwargs = {
+            'url': {'view_name': 'Stream-platform-Detail', 'lookup_field': 'pk'}
+        }
         
     def get_len_name(self, object):
         return len(object.name) 
@@ -18,18 +45,7 @@ class StreamSerializer(serializers.ModelSerializer):
         
         
         
-class WatchListSerializer(serializers.ModelSerializer):
-    #adds a len_name field to the models and objects
-    len_name = serializers.SerializerMethodField()
-    class Meta:
-        model= WatchList
-        fields = '__all__' #['id','name','description','active']
-        # exclude =['active']
-        
-    # def get_len_name(self,object):
-        
-    #     return len(object.name)
-    
+
      
     # def validate(self,data):
     #     if data["name"] == data["description"]:
