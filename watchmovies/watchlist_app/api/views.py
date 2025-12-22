@@ -18,6 +18,10 @@ class ReviewCreate(generics.CreateAPIView):
         
         return super().perform_create(serializer)
     
+class ReviewListAll(generics.ListAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewListSerializer
+
 class ReviewList(generics.ListAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewListSerializer
@@ -25,18 +29,11 @@ class ReviewList(generics.ListAPIView):
     
     def get_queryset(self):
         pk = self.kwargs['pk']
-        return Review.objects.filter(watchlist = pk)
+        return Review.objects.filter(WatchList = pk)
     
-
-
-
 class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewListSerializer
-
-
-
-
 
 
 
@@ -185,12 +182,6 @@ class WatchListDetailAV(APIView):
         return Response(status = status.HTTP_204_NO_CONTENT)
     
         
-        
-    
-        
-    
-        
-    
     
 # @api_view(['GET','POST'])
 # def movie_list(request):
